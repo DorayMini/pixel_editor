@@ -5,33 +5,75 @@
 #include <cstring>
 #include <stdexcept>
 
-Canvas::Canvas(uint w, uint h, uint posx, uint posy)
-    : _w(w), _h(h), _posx(posx), _posy(posy), _window(WindowWrapper::getInstance().getWindow())
+px::Canvas::Canvas(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy)
+    : _cw(cw), _ch(ch), _nx(nx), _ny(ny), _posx(posx), _posy(posy), _window(WindowWrapper::getInstance().getWindow())
 {
-    auto windowSize = _window.getSize();
-    float _pw = windowSize.x / _w;
-    float _ph = windowSize.y / _h;
-    _ps = std::min(_pw, _ph);
+    update(cw, ch, nx, ny, posx, posy);
+}
 
-    std::cout << _pw << '\n';
-    for (int y = 0; y < _w; ++y) {
-        for (int x = 0; x < _h; ++x) {
-            sf::RectangleShape rect;
-            rect.setSize(sf::Vector2f(_ps, _ps));
-            rect.setPosition({_posx + (x - _w / 2), _posy + (y - _h / 2)});
-            rect.setFillColor(sf::Color::White);
-            _pixels.push_back(rect);
+void px::Canvas::update(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy) {
+    bool isEmpty = _pixels.empty();
+
+    auto windowSize = _window.getSize();
+    _ps = std::min(float(cw / nx), float(ch / ny));
+
+    for (int y = 0; y < ny; ++y) {
+        for (int x = 0; x < nx; ++x) {
+            int px = (posx - (cw / 2)) + x * _ps + 1;
+            int py = (posy - (ch / 2)) + y * _ps + 1;
+
+            if (isEmpty)
+                _pixels.push_back(std::make_pair(sf::Vector2i(px, py), _stdColor));
+            else {
+                int index = x * nx + y;
+                _pixels[index].first = sf::Vector2i(px, py);
+            }
         }
     }
 }
 
-
-Canvas& Canvas::create(uint w, uint h, uint posx, uint posy) {
-    static Canvas canvas(w, h, posx, posy);
+px::Canvas& px::Canvas::create(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy) {
+    static Canvas canvas(cw, ch, nx, ny, posx, posy);
     return canvas;
 }
 
-void Canvas::view() {
-    for (auto& pixel: _pixels)
-        _window.draw(pixel);
+void px::Canvas::draw() {
+    sf::RectangleShape pixelShape(sf::Vector2f(_ps, _ps));
+
+    for (auto& px: _pixels) {
+        if (px.first.x < 0 || px.first.y < 0
+        || px.first.x > _window.getSize().x
+        || px.first.y > _window.getSize().y)
+            continue;
+
+        pixelShape.setFillColor(px.second);
+        pixelShape.setOutlineThickness(0.5f);
+        pixelShape.setOutlineColor(sf::Color::Black);
+        pixelShape.setPosition(sf::Vector2f(px.first.x, px.first.y));
+        _window.draw(pixelShape);
+    }
+}
+
+void px::Canvas::setPixelColor(uint x, uint y, const sf::Color& color) {
+    int index = x * _nx + y;
+    _pixels[index].second = color;
+}
+
+sf::Vector2i px::Canvas::getPos(){
+    return sf::Vector2i(_posx, _posy);
+}
+
+sf::Vector2i px::Canvas::getSize() {
+    return sf::Vector2i(_cw, _ch);
+}
+
+sf::Vector2i px::Canvas::getScreenPixelCount() {
+    auto wSize = _window.getSize();
+    int x = wSize.x / _ps;
+    int y = wSize.y / _ps;
+    return sf::Vector2i(x, y);
+}
+
+float px::Canvas::getPixelSize() {
+    return _ps;
 }

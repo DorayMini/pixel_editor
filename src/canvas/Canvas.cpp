@@ -67,11 +67,8 @@ sf::Vector2i px::Canvas::getSize() {
     return sf::Vector2i(_cw, _ch);
 }
 
-sf::Vector2i px::Canvas::getScreenPixelCount() {
-    auto wSize = _window.getSize();
-    int x = wSize.x / _ps;
-    int y = wSize.y / _ps;
-    return sf::Vector2i(x, y);
+sf::Vector2i px::Canvas::getPixelCounts() {
+    return sf::Vector2i(_nx, _ny);
 }
 
 float px::Canvas::getPixelSize() {

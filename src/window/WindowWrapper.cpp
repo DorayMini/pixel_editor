@@ -1,6 +1,7 @@
 #include "WindowWrapper.hpp"
 
 #include <stdexcept>
+#include <string>
 
 px::WindowWrapper* px::WindowWrapper::_instance = nullptr;
 
@@ -24,6 +25,15 @@ px::WindowWrapper& px::WindowWrapper::getInstance() {
     if (!_instance)
         throw std::runtime_error("WindowWrapper not initialized! Call getInstance(title, width, height) first.");
     return *_instance;
+}
+
+void px::WindowWrapper::update() {
+    _stats.updateFPS(_fpsAlpha);
+
+    std::string updTitle = _title + " / fps: " + std::to_string(static_cast<int>(_stats.getFPS()));
+    _window->setTitle(updTitle);
+
+    _window->display();
 }
 
 sf::RenderWindow& px::WindowWrapper::getWindow() {

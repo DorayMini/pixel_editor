@@ -27,7 +27,7 @@ namespace px {
 
         sf::Vector2i getPos();
         sf::Vector2i getSize();
-        sf::Vector2i getScreenPixelCount();
+        sf::Vector2i getPixelCounts();
         float getPixelSize();
     private:
         Canvas(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy);

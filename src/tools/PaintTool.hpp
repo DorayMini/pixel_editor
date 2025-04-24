@@ -1,18 +1,19 @@
 #ifndef __PAINT_TOOL__
 #define __PAINT_TOOL__
 
-#include "ITool.hpp"
+#include "BaseCanvasTool.hpp"
 
 #include <SFML/Graphics.hpp>
 
 namespace px {
-    class PaintTool: public ITool {
+    class PaintTool: public BaseCanvasTool{
     public:
-        bool acceptsClick(int x, int y) const override;
-        void onMouseDown() override;
-        void onMouseUp() override;
-    private:
+        PaintTool(sf::RenderWindow& window, px::Canvas& canvas, sf::Color col);
+
         sf::Color color;
+    protected:
+        void applyToPixel(int index) override;
+        void endApplyToPixel() override;
     };
 } // namespace px
 

@@ -25,10 +25,13 @@ namespace px {
 
         void setPixelColor(uint x, uint y, const sf::Color& color);
 
-        sf::Vector2i getPos();
-        sf::Vector2i getSize();
-        sf::Vector2i getPixelCounts();
-        float getPixelSize();
+        sf::Vector2i getPos() const;
+        sf::Vector2i getSize() const;
+        sf::Vector2i getPixelCounts() const;
+        float getPixelSize() const;
+        sf::Color getStdColor() const;
+
+        std::vector<std::pair<sf::Vector2i, sf::Color>> pixels;
     private:
         Canvas(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy);
 
@@ -40,7 +43,6 @@ namespace px {
         uint _nx, _ny; // Pixel count in X and Y directions
         uint _posx, _posy; // Canvas pos
         float _ps; // Pixel size
-        std::vector<std::pair<sf::Vector2i, sf::Color>> _pixels;
 
         sf::Color _stdColor = sf::Color::White;
         bool isUpdate = false;

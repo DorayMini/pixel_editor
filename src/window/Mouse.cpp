@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 sf::Vector2i px::Mouse::getPosition(sf::RenderWindow& window) {
     return sf::Mouse::getPosition(window);
@@ -16,24 +17,25 @@ float px::Mouse::getDistanceToMouse(sf::RenderWindow& window, int x, int y) {
     return sqrt((x-mousePos.x)*(x-mousePos.x) + (y-mousePos.y)*(y-mousePos.y));
 }
 
-float px::Mouse::getCanvasDistanceToMouse(sf::RenderWindow& window, px::Canvas& canvas, int px, int py) {
-    sf::Vector2i mousePos = getPosition(window);
-
+bool px::Mouse::isCanvasPixelHovered(sf::RenderWindow& window, px::Canvas& canvas, int px, int py) {
     sf::Vector2i canvasCenter = canvas.getPos();
     sf::Vector2i canvasSize = canvas.getSize();
     float pxSize = canvas.getPixelSize();
 
-    int gridOriginX = canvasCenter.x - static_cast<int>((canvasSize.x) / 2);
-    int gridOriginY = canvasCenter.y - static_cast<int>((canvasSize.y) / 2);
+    float gridOriginX = canvasCenter.x - static_cast<float>(canvasSize.x / 2);
+    float gridOriginY = canvasCenter.y - static_cast<float>(canvasSize.y / 2);
 
-    float cellCenterX = gridOriginX + (px + (px / 2)) * pxSize;
-    float cellCenterY = gridOriginY + (py + (px / 2)) * pxSize;
+    float cellX = gridOriginX + px * pxSize;
+    float cellY = gridOriginY + py * pxSize;
 
-    float dx = cellCenterX - mousePos.x;
-    float dy = cellCenterY - mousePos.y;
-    float dist = std::sqrt(dx * dx + dy * dy);
+    sf::Vector2i mousePos = getPosition(window);
 
-    return dist / pxSize;
+    float pxS2 = (pxSize / 2);
+
+    float dx = cellX + pxS2 - mousePos.x;
+    float dy = cellY + pxS2 - mousePos.y;
+    uint dist = std::sqrt(dx * dx + dy * dy) / pxS2;
+    return !dist;
 }
 
 

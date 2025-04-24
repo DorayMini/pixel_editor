@@ -12,7 +12,7 @@ px::Canvas::Canvas(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy)
 }
 
 void px::Canvas::update(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy) {
-    bool isEmpty = _pixels.empty();
+    bool isEmpty = pixels.empty();
 
     auto windowSize = _window.getSize();
     _ps = std::min(float(cw / nx), float(ch / ny));
@@ -23,10 +23,10 @@ void px::Canvas::update(uint cw, uint ch, uint nx, uint ny, uint posx, uint posy
             int py = (posy - (ch / 2)) + y * _ps + 1;
 
             if (isEmpty)
-                _pixels.push_back(std::make_pair(sf::Vector2i(px, py), _stdColor));
+                pixels.push_back(std::make_pair(sf::Vector2i(px, py), _stdColor));
             else {
                 int index = x * nx + y;
-                _pixels[index].first = sf::Vector2i(px, py);
+                pixels[index].first = sf::Vector2i(px, py);
             }
         }
     }
@@ -40,7 +40,7 @@ px::Canvas& px::Canvas::create(uint cw, uint ch, uint nx, uint ny, uint posx, ui
 void px::Canvas::draw() {
     sf::RectangleShape pixelShape(sf::Vector2f(_ps, _ps));
 
-    for (auto& px: _pixels) {
+    for (auto& px: pixels) {
         if (px.first.x < 0 || px.first.y < 0
         || px.first.x > _window.getSize().x
         || px.first.y > _window.getSize().y)
@@ -56,21 +56,25 @@ void px::Canvas::draw() {
 
 void px::Canvas::setPixelColor(uint x, uint y, const sf::Color& color) {
     int index = x * _nx + y;
-    _pixels[index].second = color;
+    pixels[index].second = color;
 }
 
-sf::Vector2i px::Canvas::getPos(){
+sf::Vector2i px::Canvas::getPos() const{
     return sf::Vector2i(_posx, _posy);
 }
 
-sf::Vector2i px::Canvas::getSize() {
+sf::Vector2i px::Canvas::getSize() const{
     return sf::Vector2i(_cw, _ch);
 }
 
-sf::Vector2i px::Canvas::getPixelCounts() {
+sf::Vector2i px::Canvas::getPixelCounts() const{
     return sf::Vector2i(_nx, _ny);
 }
 
-float px::Canvas::getPixelSize() {
+float px::Canvas::getPixelSize() const{
     return _ps;
+}
+
+sf::Color px::Canvas::getStdColor() const{
+    return _stdColor;
 }

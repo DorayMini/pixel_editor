@@ -18,7 +18,7 @@ namespace px {
         static sf::Vector2i getPosition(sf::RenderWindow& window);
         static void setPosition(sf::RenderWindow& window, int x, int y);
         static float getDistanceToMouse(sf::RenderWindow& window, int x, int y);
-        static float getCanvasDistanceToMouse(sf::RenderWindow& window, px::Canvas& canvas, int px, int py);
+        static bool isCanvasPixelHovered(sf::RenderWindow& window, px::Canvas& canvas, int px, int py);
 
         static void setOnClick(ITool* tool, sf::Mouse::Button button);
         static void mousePressed(sf::RenderWindow& window);

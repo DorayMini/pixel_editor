@@ -1,16 +1,13 @@
 #include "PaintTool.hpp"
-#include <iostream>
 
-bool px::PaintTool::acceptsClick(int x, int y) const {
-    return true;
+px::PaintTool::PaintTool(sf::RenderWindow& window, px::Canvas& canvas, sf::Color col)
+    : BaseCanvasTool(window, canvas), color(col) {}
+
+
+void px::PaintTool::applyToPixel(int index) {
+    _canvas.pixels[index].second = color;
 }
 
-void px::PaintTool::onMouseDown() {
-    std::cout << "click" << '\n';
-    return;
-}
-
-void px::PaintTool::onMouseUp() {
-    std::cout << "no click" << '\n';
+void px::PaintTool::endApplyToPixel() {
     return;
 }

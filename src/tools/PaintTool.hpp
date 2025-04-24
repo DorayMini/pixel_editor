@@ -8,7 +8,7 @@
 namespace px {
     class PaintTool: public BaseCanvasTool{
     public:
-        PaintTool(sf::RenderWindow& window, px::Canvas& canvas, sf::Color col);
+        PaintTool(sf::RenderWindow& window, px::Canvas& canvas, const sf::Color& col);
 
         sf::Color color;
     protected:

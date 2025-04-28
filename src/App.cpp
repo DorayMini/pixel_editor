@@ -13,7 +13,6 @@ px::App::App() {
 
     toolManager.createTool<PaintTool>(*window, *canvas, sf::Color::Red);
     toolManager.createTool<EraseTool>(*window, *canvas);
-    px::Mouse::setOnClick(&toolManager, sf::Mouse::Button::Left);
 }
 
 void px::App::run() {
@@ -22,8 +21,8 @@ void px::App::run() {
       if (event->is<sf::Event::Closed>()) {
         window->close();
       }
+      px::Mouse::mousePressed(*event, *window);
     }
-    px::Mouse::mousePressed(*window);
 
     window->clear();
     canvas->draw();

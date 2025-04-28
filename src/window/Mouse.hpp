@@ -2,13 +2,9 @@
 #define __MOUSE_HPP__
 
 #include "../canvas/Canvas.hpp"
-#include "../tools/ITool.hpp"
 
+#include "_detail/Mouse.hpp"
 #include <SFML/Graphics.hpp>
-
-#include <map>
-#include <utility>
-#include <vector>
 
 typedef unsigned int uint;
 
@@ -20,8 +16,14 @@ namespace px {
         static float getDistanceToMouse(sf::RenderWindow& window, int x, int y);
         static bool isCanvasPixelHovered(sf::RenderWindow& window, px::Canvas& canvas, int px, int py);
 
-        static void setOnClick(ITool* tool, sf::Mouse::Button button);
-        static void mousePressed(sf::RenderWindow& window);
+        /*
+        The "pos" parameter is responsible
+        for changing the callback,
+        if you do not want to change it,
+        do not set the parameter
+        */
+        static unsigned int setCallback(std::function<void(bool&)> callback, sf::Mouse::Button button, unsigned int pos = std::numeric_limits<unsigned int>::max());
+        static void mousePressed(const sf::Event& event, sf::RenderWindow& window);
         void view();
     private:
 
@@ -30,11 +32,4 @@ namespace px {
     };
 
 } // namespace px
-
-namespace px::_detail {
-    class Mouse {
-    public:
-        static inline std::map<sf::Mouse::Button, std::pair<ITool*, bool /* OnClicked */>> activeTools;
-    };
-} // namespace px::detail
 #endif

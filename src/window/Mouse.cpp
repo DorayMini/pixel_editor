@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iostream>
 
+typedef px::_detail::Mouse _dMouse;
+
 sf::Vector2i px::Mouse::getPosition(sf::RenderWindow& window) {
     return sf::Mouse::getPosition(window);
 }
@@ -39,28 +41,35 @@ bool px::Mouse::isCanvasPixelHovered(sf::RenderWindow& window, px::Canvas& canva
 }
 
 
-void px::Mouse::setOnClick(ITool* tool, sf::Mouse::Button button) {
-    px::_detail::Mouse::activeTools[button] = std::make_pair(tool, false);
-}
-
-void px::Mouse::mousePressed(sf::RenderWindow& window) {
-    if (px::_detail::Mouse::activeTools.empty())
-        return;
-
-    for (const auto& pair: px::_detail::Mouse::activeTools) {
-        auto [tool, isClicked] = pair.second;
-        if (sf::Mouse::isButtonPressed(pair.first)) {
-            isClicked = true;
-            auto mousePos = getPosition(window);
-            if (tool->acceptsClick(mousePos.x, mousePos.y)) {
-                tool->onMouseDown();
-            }
+unsigned int px::Mouse::setCallback(std::function<void(bool&)> callback, sf::Mouse::Button button, unsigned int pos) {
+    if(pos == std::numeric_limits<unsigned int>::max()) {
+        _dMouse::callbacks.push_back(_dMouse::Callback{callback, button, false});
+        return _dMouse::callbacks.size() - 1;
+    }
+    else {
+        if (pos < _dMouse::callbacks.size()) {
+            _dMouse::Callback call = _dMouse::callbacks[pos];
+            call.callback = callback;
+            call.button = button;
+            return pos;
         }
         else {
-            if (isClicked) {
-                tool->onMouseUp();
-                isClicked = false;
-            }
+            std::cerr << "Invalid position provided for callback update.\n";
+            return std::numeric_limits<unsigned int>::max();
         }
+    }
+}
+
+void px::Mouse::mousePressed(const sf::Event& event, sf::RenderWindow& window) {
+    if (_dMouse::callbacks.empty()) return;
+
+    for (auto& callbackData: _dMouse::callbacks) {
+        if (event.is<sf::Event::MouseButtonPressed>()) {
+            callbackData.isClicked = true;
+        } else if (event.is<sf::Event::MouseButtonReleased>()) {
+            callbackData.isClicked = false;
+        }
+
+        callbackData.callback(callbackData.isClicked);
     }
 }

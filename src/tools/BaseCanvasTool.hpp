@@ -11,7 +11,7 @@ namespace px {
     public:
         BaseCanvasTool(sf::RenderWindow& window, px::Canvas& canvas)
             : _window(window), _canvas(canvas ) {}
-        bool acceptsClick(int, int) const override {
+        bool acceptsClick() const override {
             int width = _canvas.getPixelCounts().x;
             for (size_t i = 0; i < _canvas.pixels.size(); i++) {
                 int x = i % width;
@@ -30,6 +30,17 @@ namespace px {
 
         void onMouseUp() override {
             endApplyToPixel();
+        }
+
+        std::function<void(bool&)> getCallback() override {
+            return [this](bool& isClicked){
+                if(isClicked) {
+                    if (this->acceptsClick())
+                        this->onMouseDown();
+                }
+                else
+                    this->onMouseUp();
+            };
         }
     protected:
         virtual void applyToPixel(int index) = 0;
